@@ -25,9 +25,9 @@ type CreateTransferParams struct {
 	Amount        int64 `json:"amount"`
 }
 
-func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfers, error) {
+func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, createTransfer, arg.FromAccountID, arg.ToAccountID, arg.Amount)
-	var i Transfers
+	var i Transfer
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -44,9 +44,9 @@ WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfers, error) {
+func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, getTransfer, id)
-	var i Transfers
+	var i Transfer
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -74,7 +74,7 @@ type GetTransfersParams struct {
 	Offset        int32 `json:"offset"`
 }
 
-func (q *Queries) GetTransfers(ctx context.Context, arg GetTransfersParams) ([]Transfers, error) {
+func (q *Queries) GetTransfers(ctx context.Context, arg GetTransfersParams) ([]Transfer, error) {
 	rows, err := q.db.QueryContext(ctx, getTransfers,
 		arg.FromAccountID,
 		arg.ToAccountID,
@@ -85,9 +85,9 @@ func (q *Queries) GetTransfers(ctx context.Context, arg GetTransfersParams) ([]T
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transfers
+	var items []Transfer
 	for rows.Next() {
-		var i Transfers
+		var i Transfer
 		if err := rows.Scan(
 			&i.ID,
 			&i.FromAccountID,
